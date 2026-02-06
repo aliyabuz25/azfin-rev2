@@ -404,8 +404,11 @@ const SectionEditorView: React.FC<SectionEditorViewProps> = ({
                                                 ) : isMultiline ? (
                                                     <textarea
                                                         rows={type === 'array' ? 4 : 6}
-                                                        value={val}
-                                                        onChange={(e) => handleSectionInputChange(key, e.target.value)}
+                                                        value={Array.isArray(val) ? val.join('\n') : val}
+                                                        onChange={(e) => {
+                                                            const newValue = type === 'array' ? e.target.value.split('\n') : e.target.value;
+                                                            handleSectionInputChange(key, newValue);
+                                                        }}
                                                         className="w-full bg-slate-50 border-none rounded-3xl p-6 text-sm font-medium text-slate-600 focus:ring-4 focus:ring-primary/5 outline-none placeholder:text-slate-200 leading-relaxed custom-scrollbar"
                                                         placeholder={type === 'array' ? "Hər sətirə bir element yazın..." : "Səliqəli şəkildə daxil edin..."}
                                                     />

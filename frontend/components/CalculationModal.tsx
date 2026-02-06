@@ -42,7 +42,12 @@ const CalculationModal: React.FC<CalculationModalProps> = ({ isOpen, onClose, se
     e.preventDefault();
     setLoading(true);
     try {
-      await submitForm('audit', { ...formData, serviceTitle, serviceType });
+      const { error } = await submitForm('audit', { ...formData, serviceTitle, serviceType });
+      if (error) {
+        console.error('Supabase error:', error);
+        alert('Sorğu gönderilirkən xəta baş verdi: ' + (typeof error === 'string' ? error : (error as any).message || 'Bilinməyən xəta'));
+        return;
+      }
       setSubmitted(true);
     } catch (error) {
       console.error('Calculation submission error:', error);

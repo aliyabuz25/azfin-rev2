@@ -16,6 +16,9 @@
     "heroImage": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=1000",
     "heroPrimaryAction": "Xidmətlər",
     "heroSecondaryAction": "Təklif Alın",
+    "heroExperienceLabel": "Təcrübəmiz",
+    "heroExperienceValue": "15+ İl",
+    "heroExperienceSublabel": "Səriştəli Xidmət",
     "statsHeading": "Əsas rəqəmlərimiz",
     "statsSummary": "850+ uğurlu audit, 320+ korporativ müştəri, 15+ illik təcrübə və 25+ peşəkar ekspert ilə əməliyyatları dəstəkləyirik.",
     "servicesHeading": "Əsas Xidmətlərimiz",
@@ -207,6 +210,7 @@
     "serviceTitle": "Xidmət sahələri",
     "serviceSummary": "Mühasibatlıq, audit, vergi, tender sənədləşməsi və hüquqi dəstək üzrə geniş spektrli professional xidmətlər.",
     "testimonialsTitle": "Müştəri rəyləri",
+    "testimonialsCTA": "Bizimlə əməkdaşlıq edən 300-dən çox korporativ müştəri sırasına siz də qoşulun.",
     "team": [
       {
         "name": "Elvin Məmmədov",

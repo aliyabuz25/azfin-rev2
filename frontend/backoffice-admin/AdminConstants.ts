@@ -22,20 +22,27 @@ export const FIELD_CONFIG = [
     { section: 'home', category: 'Giriş (Hero)', field: 'heroPrimaryAction', label: 'Hero - Əsas Düymə' },
     { section: 'home', category: 'Giriş (Hero)', field: 'heroSecondaryAction', label: 'Hero - İkinci Düymə' },
     { section: 'home', category: 'Giriş (Hero)', field: 'heroImage', label: 'Hero - Arxa Fon Şəkli', type: 'image' },
+    { section: 'home', category: 'Giriş (Hero)', field: 'heroExperienceLabel', label: 'Hero - Təcrübə Etiketi' },
+    { section: 'home', category: 'Giriş (Hero)', field: 'heroExperienceValue', label: 'Hero - Təcrübə Dəyəri' },
+    { section: 'home', category: 'Giriş (Hero)', field: 'heroExperienceSublabel', label: 'Hero - Təcrübə Alt Etiketi' },
 
     { section: 'home', category: 'Statistika', field: 'statsHeading', label: 'Statistika Bölməsi - Başlıq' },
     { section: 'home', category: 'Statistika', field: 'statsSummary', label: 'Statistika Bölməsi - Təsvir', multiline: true },
+    { section: 'home', category: 'Statistika', field: 'stats', label: 'Statistika Maddələri', type: 'array-object' },
 
     { section: 'home', category: 'Xidmətlər', field: 'servicesHeading', label: 'Xidmətlər Bölməsi - Başlıq' },
     { section: 'home', category: 'Xidmətlər', field: 'servicesSubtitle', label: 'Xidmətlər Bölməsi - Alt Başlıq' },
     { section: 'home', category: 'Xidmətlər', field: 'servicesSummary', label: 'Xidmətlər Bölməsi - Təsvir', multiline: true },
 
     { section: 'home', category: 'Sektorlar', field: 'sectorsHeading', label: 'Sektorlar Bölməsi - Başlıq', multiline: true },
+    { section: 'home', category: 'Sektorlar', field: 'sectors', label: 'Sektorlar Siyahısı', type: 'array-object' },
 
     { section: 'home', category: 'Proses', field: 'processHeading', label: 'Proses Bölməsi - Başlıq' },
     { section: 'home', category: 'Proses', field: 'processSummary', label: 'Proses Bölməsi - Təsvir', multiline: true },
+    { section: 'home', category: 'Proses', field: 'process', label: 'İş Prosesi Maddələri', type: 'array-object' },
 
     { section: 'home', category: 'Digər', field: 'clientsHeading', label: 'Müştərilər Bölməsi - Başlıq' },
+    { section: 'home', category: 'Digər', field: 'clients', label: 'Müştərilər / Tərəfdaşlar', type: 'array-object' },
     { section: 'home', category: 'Digər', field: 'ctaHeading', label: 'Alt CTA - Başlıq' },
     { section: 'home', category: 'Digər', field: 'ctaButtonText', label: 'Alt CTA - Düymə Mətni' },
 
@@ -53,6 +60,8 @@ export const FIELD_CONFIG = [
     { section: 'about', category: 'Komanda', field: 'team', label: 'Komanda Üzvləri', type: 'array-object' },
     { section: 'about', category: 'Digər', field: 'testimonials', label: 'Müştəri Rəyləri Siyahısı', type: 'array-object' },
     { section: 'about', category: 'Digər', field: 'testimonialsTitle', label: 'Rəylər Bölməsi - Başlıq' },
+    { section: 'about', category: 'Digər', field: 'testimonialsCTA', label: 'Rəylər Bölməsi - Alt CTA', multiline: true },
+    { section: 'about', category: 'Naviqasiya', field: 'tabs', label: 'Yan Panel Tabları', type: 'array-object' },
 
     // Services Page
     { section: 'services', category: 'Giriş (Hero)', field: 'heroBadge', label: 'Səhifə Nişanı (Badge)' },

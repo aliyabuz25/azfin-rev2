@@ -72,10 +72,10 @@ const Home: React.FC = () => {
                   <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center shadow-lg shadow-accent/20">
                     <Award className="h-6 w-6 text-white" />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Təcrübəmiz</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{hero.heroExperienceLabel || 'Təcrübəmiz'}</span>
                 </div>
-                <div className="text-3xl font-black text-primary tracking-tighter italic uppercase">15+ İl</div>
-                <div className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-widest">Səriştəli Xidmət</div>
+                <div className="text-3xl font-black text-primary tracking-tighter italic uppercase">{hero.heroExperienceValue || '15+ İl'}</div>
+                <div className="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-widest">{hero.heroExperienceSublabel || 'Səriştəli Xidmət'}</div>
               </div>
             </div>
           </div>
@@ -85,7 +85,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-24">
-            {stats.map((stat, idx) => {
+            {(Array.isArray(stats) ? stats : []).map((stat, idx) => {
               return (
                 <div key={`${stat.label}-${idx}`} className="flex flex-col items-start group">
                   <span className="text-5xl font-black text-primary tracking-tighter italic uppercase mb-2 group-hover:text-accent transition-colors duration-500">
@@ -109,7 +109,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dynamicServices.map((service) => {
+            {(Array.isArray(dynamicServices) ? dynamicServices : []).map((service) => {
               const Icon = resolveIcon(service.icon);
               return (
                 <Link key={service.id} to={`/services/${service.id}`} className="group bg-white p-10 rounded-sm border border-slate-100 hover:border-accent transition-all duration-500 flex flex-col items-start shadow-sm hover:shadow-xl hover:-translate-y-1">
@@ -138,7 +138,7 @@ const Home: React.FC = () => {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
-            {sectors.map((sector, idx) => {
+            {(Array.isArray(sectors) ? sectors : []).map((sector, idx) => {
               const SectorIcon = resolveIcon(sector.icon);
               return (
                 <div key={idx} className="group flex flex-col space-y-6">
@@ -164,7 +164,7 @@ const Home: React.FC = () => {
             <p className="mt-6 text-slate-500 font-medium max-w-2xl mx-auto">{hero.processSummary}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {processSteps.map((step) => {
+            {(Array.isArray(processSteps) ? processSteps : []).map((step) => {
               const ProcessIcon = resolveIcon(step.icon);
               return (
                 <div key={step.id} className="relative group bg-white p-10 rounded-[40px] border border-slate-100 hover:shadow-2xl transition-all duration-500 overflow-hidden text-left">

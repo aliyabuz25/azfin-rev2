@@ -18,8 +18,6 @@ export const submitForm = async (type: FormSubmission['type'], data: any) => {
             {
                 type,
                 form_data: data,
-                status: 'new',
-                created_at: new Date().toISOString(),
             },
         ])
         .select();

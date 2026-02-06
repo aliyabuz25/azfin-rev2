@@ -24,7 +24,12 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, tr
         e.preventDefault();
         setLoading(true);
         try {
-            await submitForm('training', { ...formData, trainingTitle });
+            const { error } = await submitForm('training', { ...formData, trainingTitle });
+            if (error) {
+                console.error('Supabase error:', error);
+                alert('Müraciət göndərilərkən xəta baş verdi: ' + (typeof error === 'string' ? error : (error as any).message || 'Bilinməyən xəta'));
+                return;
+            }
             setSubmitted(true);
         } catch (error) {
             console.error('Training application error:', error);
@@ -103,6 +108,17 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, tr
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                         className="w-full bg-slate-50 border border-slate-200 p-4 focus:outline-none focus:border-accent font-bold text-xs rounded-sm"
                                         placeholder="+994 50 000 00 00"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">E-poçt ünvanı *</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={(formData as any).email || ''}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value } as any)}
+                                        className="w-full bg-slate-50 border border-slate-200 p-4 focus:outline-none focus:border-accent font-bold text-xs rounded-sm"
+                                        placeholder="email@shirkat.az"
                                     />
                                 </div>
                                 <div className="space-y-2">

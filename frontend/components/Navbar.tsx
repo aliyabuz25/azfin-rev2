@@ -84,7 +84,7 @@ const Navbar: React.FC = () => {
                       </Link>
                       {activeDropdown === item.label && (
                         <div className="absolute top-[100%] left-1/2 -translate-x-1/2 w-[550px] bg-white border border-slate-100 shadow-2xl p-6 grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-1">
-                          {dynamicServices.map((service) => {
+                          {(Array.isArray(dynamicServices) ? dynamicServices : []).map((service) => {
                             const SvgIcon = resolveIcon(service.icon);
                             return (
                               <Link

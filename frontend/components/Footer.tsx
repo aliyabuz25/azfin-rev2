@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-[#3b82f6] text-[13px] font-black uppercase tracking-[0.2em] mb-10">Xidmətlər</h3>
             <ul className="space-y-6">
-              {(siteContent.services?.list || SERVICES).map((service) => (
+              {(Array.isArray(siteContent.services?.list) ? siteContent.services.list : SERVICES).map((service) => (
                 <li key={service.id}>
                   <Link
                     to={`/services/${service.id}`}

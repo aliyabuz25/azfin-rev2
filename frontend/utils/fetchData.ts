@@ -4,54 +4,51 @@ import { ensureLocalBlogPosts, readLocalBlogPosts } from './localBlogStore';
 
 const mapBlogRow = (row: any): BlogItem => ({
   id: row.id,
-  title: row.title,
-  excerpt: row.excerpt,
-  content: row.content || row.body,
-  date: row.date || row.published_at || row.created_at,
-  author: row.author,
-  image: row.image || row.image_url || row.cover_image,
-  category: row.category,
-  status: row.status,
+  title: row.title || row.header || '',
+  excerpt: row.excerpt || row.summary || '',
+  content: row.content || row.body || row.full_content || '',
+  date: row.date || row.published_at || row.created_at || new Date().toISOString().split('T')[0],
+  author: row.author || 'Azfin Ekspert',
+  image: row.image || row.image_url || row.cover_image || '',
+  category: row.category || 'Ümumi',
+  status: row.status || 'published',
 });
 
 const normalizeStatus = (status?: string): TrainingItem['status'] => {
-  if (status === 'ongoing') return 'ongoing';
-  if (status === 'completed') return 'completed';
+  const s = String(status || '').toLowerCase();
+  if (s === 'ongoing' || s === 'davam edir') return 'ongoing';
+  if (s === 'completed' || s === 'başa çatıb') return 'completed';
   return 'upcoming';
 };
 
 const mapTrainingRow = (row: any): TrainingItem => ({
   id: row.id,
-  title: row.title,
-  description: row.description,
-  fullContent: row.fullContent,
-  syllabus: Array.isArray(row.syllabus) ? ((row.syllabus as unknown[]) as string[]) : [],
-  startDate: row.startDate,
-  duration: row.duration,
-  level: row.level,
-  image: row.image,
+  title: row.title || '',
+  description: row.description || row.summary || '',
+  fullContent: row.fullContent || row.full_content || row.content || '',
+  syllabus: Array.isArray(row.syllabus) ? row.syllabus : (typeof row.syllabus === 'string' ? row.syllabus.split('\n').filter(Boolean) : []),
+  startDate: row.startDate || row.start_date || row.date || '',
+  duration: row.duration || '',
+  level: row.level || 'Bütün səviyyələr',
+  image: row.image || row.image_url || '',
   status: normalizeStatus(row.status),
 });
 
 export const fetchBlogPosts = async (): Promise<BlogItem[]> => {
   if (!supabase) {
     console.warn('Supabase disabled; returning local blog list.');
-    return ensureLocalBlogPosts().filter((post) => post.status === 'published');
+    return ensureLocalBlogPosts();
   }
 
+  // Fetching all posts as requested "her blog görünmeli"
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
-    .ilike('status', 'published')
     .order('created_at', { ascending: false });
 
   if (error) {
     console.error('Failed to fetch blog posts from Supabase:', error);
     return [];
-  }
-
-  if (!data || data.length === 0) {
-    console.warn('Supabase returned 0 published blog posts.');
   }
 
   return (data ?? []).map(mapBlogRow);

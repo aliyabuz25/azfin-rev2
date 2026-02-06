@@ -104,7 +104,7 @@ const ServiceDetail: React.FC = () => {
               <div>
                 <h3 className="text-xl font-black text-primary mb-12 tracking-tight uppercase italic">{service.benefitsTitle || 'XİDMƏTƏ DAXİL OLAN İSTİQAMƏTLƏR'}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {service.benefits?.map((benefit, idx) => (
+                  {(Array.isArray(service.benefits) ? service.benefits : (typeof service.benefits === 'string' ? (service.benefits as string).split('\n').filter(Boolean) : [])).map((benefit, idx) => (
                     <div key={idx} className="flex items-center gap-6 p-8 bg-slate-50 border border-slate-100 group hover:border-accent transition-colors">
                       <div className="w-10 h-10 flex-shrink-0 bg-primary text-accent flex items-center justify-center rounded-sm group-hover:bg-accent group-hover:text-white transition-all shadow-md">
                         <CheckCircle2 className="h-5 w-5" />

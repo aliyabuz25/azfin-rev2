@@ -4,12 +4,12 @@ import { Search, FileJson, BookOpen, Search as SearchIcon } from 'lucide-react';
 import { getSectionIcon, getSectionLabel } from './AdminConstants';
 
 interface SidebarNavigationProps {
-    adminMode: 'site' | 'blog' | 'training' | 'sitemap' | 'clients' | 'messages';
+    adminMode: 'site' | 'blog' | 'training' | 'sitemap' | 'messages';
     selectedSection: string;
     viewMode: 'section' | 'full';
     sectionSearch: string;
     setSectionSearch: (val: string) => void;
-    setAdminMode: (mode: 'site' | 'blog' | 'training' | 'sitemap' | 'clients' | 'messages') => void;
+    setAdminMode: (mode: 'site' | 'blog' | 'training' | 'sitemap' | 'messages') => void;
     setSelectedSection: (section: string) => void;
     setViewMode: (mode: 'section' | 'full') => void;
     setBlogMode: (mode: 'blog' | 'training') => void;
@@ -97,19 +97,6 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
                     {adminMode === 'training' && <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />}
                 </button>
 
-                <button
-                    onClick={() => setAdminMode('clients')}
-                    className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all mb-1 ${adminMode === 'clients'
-                        ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                        : 'text-slate-500 hover:bg-white hover:text-primary group'
-                        }`}
-                >
-                    <div className="flex items-center gap-4">
-                        <BookOpen className={`h-4 w-4 ${adminMode === 'clients' ? 'text-accent' : 'text-slate-300 group-hover:text-primary'}`} />
-                        MÜŞTƏRİLƏRİMİZ
-                    </div>
-                    {adminMode === 'clients' && <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />}
-                </button>
 
                 <button
                     onClick={() => setAdminMode('sitemap')}

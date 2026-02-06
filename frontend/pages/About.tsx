@@ -150,7 +150,9 @@ const About: React.FC = () => {
                   <div className="flex flex-col items-center py-12 border-t border-slate-100 text-center">
                     <ShieldCheck className="h-12 w-12 text-accent mb-6" />
                     <h3 className="text-2xl font-black text-primary uppercase italic mb-4">{about.testimonialsTitle}</h3>
-                    <p className="text-slate-500 max-w-lg text-sm font-bold uppercase tracking-widest leading-relaxed">Bizimlə əməkdaşlıq edən 300-dən çox korporativ müştəri sırasına siz də qoşulun.</p>
+                    <p className="text-slate-500 max-w-lg text-sm font-bold uppercase tracking-widest leading-relaxed">
+                      {about.testimonialsCTA || 'Bizimlə əməkdaşlıq edən 300-dən çox korporativ müştəri sırasına siz də qoşulun.'}
+                    </p>
                   </div>
                 </div>
               )}

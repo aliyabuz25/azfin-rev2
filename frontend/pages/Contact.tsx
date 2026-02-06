@@ -20,12 +20,17 @@ const Contact: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await submitForm('contact', formData);
+      const { error } = await submitForm('contact', formData);
+      if (error) {
+        console.error('Supabase error:', error);
+        alert('Müraciət göndərilərkən xəta baş verdi: ' + (typeof error === 'string' ? error : (error as any).message || 'Bilinməyən xəta'));
+        return;
+      }
       setSubmitted(true);
-      setFormData({ name: '', email: '', service: 'Maliyyə Auditi', message: '' });
+      setFormData({ name: '', email: '', phone: '', service: 'Maliyyə Auditi', message: '' } as any);
     } catch (error) {
       console.error('Submission error:', error);
-      alert('Xəta baş verdi. Zəhmət olmasa yenidən yoxlayın.');
+      alert('Xəta baş verdi. Zəhmət olmasa internet bağlantınızı yoxlayın.');
     } finally {
       setLoading(false);
     }
@@ -128,6 +133,17 @@ const Contact: React.FC = () => {
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           className="w-full bg-white border border-slate-200 p-4 focus:outline-none focus:border-accent font-bold text-xs transition-all rounded-sm"
                           placeholder="..."
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Telefon nömrəsi *</label>
+                        <input
+                          type="tel"
+                          required
+                          value={(formData as any).phone || ''}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value } as any)}
+                          className="w-full bg-white border border-slate-200 p-4 focus:outline-none focus:border-accent font-bold text-xs transition-all rounded-sm"
+                          placeholder="+994 ..."
                         />
                       </div>
                     </div>
