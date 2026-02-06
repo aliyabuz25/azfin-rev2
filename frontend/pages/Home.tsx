@@ -84,14 +84,17 @@ const Home: React.FC = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-24">
             {stats.map((stat, idx) => {
-              const StatIcon = resolveIcon(stat.icon);
               return (
-                <div key={`${stat.label}-${idx}`} className="flex flex-col items-center text-center md:items-start md:text-left">
-                  <StatIcon className="text-accent mb-2 h-6 w-6" />
-                  <span className="text-4xl font-black text-primary tracking-tighter italic uppercase mb-1">{formatStatValue(stat.value)}</span>
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 border-t border-accent pt-2">{stat.label}</span>
+                <div key={`${stat.label}-${idx}`} className="flex flex-col items-start group">
+                  <span className="text-5xl font-black text-primary tracking-tighter italic uppercase mb-2 group-hover:text-accent transition-colors duration-500">
+                    {formatStatValue(stat.value)}
+                  </span>
+                  <div className="w-full h-[2px] bg-accent/30 group-hover:bg-accent transition-colors duration-500 mb-3"></div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
+                    {stat.label}
+                  </span>
                 </div>
               );
             })}
