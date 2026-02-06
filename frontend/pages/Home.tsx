@@ -83,10 +83,7 @@ const Home: React.FC = () => {
       </section>
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center md:text-left">
-            <h2 className="text-lg font-black text-primary uppercase italic mb-2 tracking-tighter">{hero.statsHeading}</h2>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">{hero.statsSummary}</p>
-          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {stats.map((stat, idx) => {
               const StatIcon = resolveIcon(stat.icon);
