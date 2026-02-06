@@ -300,6 +300,11 @@ const SectionEditorView: React.FC<SectionEditorViewProps> = ({
                                                                                                         )}
                                                                                                     </div>
                                                                                                 </div>
+                                                                                            ) : (Array.isArray(fv) && fv.length > 0 && typeof fv[0] === 'object') ? (
+                                                                                                <div className="w-full bg-slate-100/50 rounded-2xl px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center justify-between">
+                                                                                                    <span>Sitemap-da idarə edin</span>
+                                                                                                    <span className="bg-white px-2 py-0.5 rounded-lg border border-slate-100">{fv.length} ALT MENYU</span>
+                                                                                                </div>
                                                                                             ) : (
                                                                                                 <input
                                                                                                     type="text"
