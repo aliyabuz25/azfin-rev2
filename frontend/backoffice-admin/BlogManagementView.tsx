@@ -1,9 +1,18 @@
 
 import React, { useState, useMemo } from 'react';
-import ReactQuill from 'react-quill-new';
+import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { Settings, Upload, X, Check, RotateCcw, Bold, Italic, List, Quote, Link as LinkIcon, Image, Trash2, Plus, Edit, BookOpen, GraduationCap } from 'lucide-react';
 import { BlogItem, TrainingItem } from '../types';
+
+// Register custom sizes and fonts
+const Size = Quill.import('attributors/style/size') as any;
+Size.whitelist = ['8pt', '10pt', '12pt', '14pt', '18pt', '24pt', '36pt'];
+Quill.register(Size, true);
+
+const Font = Quill.import('attributors/style/font') as any;
+Font.whitelist = ['inter', 'roboto', 'serif', 'monospace', 'arial', 'georgia'];
+Quill.register(Font, true);
 
 interface BlogManagementViewProps {
     blogMode: 'blog' | 'training';
@@ -74,20 +83,34 @@ const BlogManagementView: React.FC<BlogManagementViewProps> = ({
     const modules = useMemo(() => ({
         toolbar: {
             container: [
-                [{ 'header': [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                [{ 'font': ['inter', 'roboto', 'serif', 'monospace', 'arial', 'georgia'] }, { 'size': ['8pt', '10pt', '12pt', '14pt', '18pt', '24pt', '36pt'] }],
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                ['link', 'image'],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                [{ 'align': [] }],
+                ['blockquote', 'code-block'],
+                ['link', 'image', 'video'],
                 ['clean']
             ],
+        },
+        clipboard: {
+            matchVisual: false,
         }
     }), []);
 
     const formats = [
+        'font', 'size',
         'header',
-        'bold', 'italic', 'underline', 'strike', 'blockquote',
-        'list', 'bullet',
-        'link', 'image'
+        'bold', 'italic', 'underline', 'strike',
+        'color', 'background',
+        'script',
+        'list', 'bullet', 'indent',
+        'align',
+        'blockquote', 'code-block',
+        'link', 'image', 'video'
     ];
 
     const openEditor = (item?: BlogItem | TrainingItem) => {
@@ -143,6 +166,27 @@ const BlogManagementView: React.FC<BlogManagementViewProps> = ({
                     font-style: normal !important;
                     padding: 0 2.5rem !important;
                 }
+                
+                /* Picker Labels for Sizes and Fonts */
+                .ql-snow .ql-picker.ql-size .ql-picker-label::before,
+                .ql-snow .ql-picker.ql-size .ql-picker-item::before {
+                    content: attr(data-value) !important;
+                }
+                .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12pt"]::before,
+                .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12pt"]::before {
+                    content: "12pt" !important;
+                }
+
+                .ql-snow .ql-picker.ql-font .ql-picker-label::before,
+                .ql-snow .ql-picker.ql-font .ql-picker-item::before {
+                    content: attr(data-value) !important;
+                    text-transform: capitalize;
+                }
+                
+                .ql-font-inter { font-family: 'Inter', sans-serif; }
+                .ql-font-roboto { font-family: 'Roboto', sans-serif; }
+                .ql-font-arial { font-family: Arial, sans-serif; }
+                .ql-font-georgia { font-family: Georgia, serif; }
             `}</style>
             {/* List View */}
             <div className="space-y-10 animate-in fade-in duration-500">
