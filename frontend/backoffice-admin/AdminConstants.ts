@@ -6,7 +6,8 @@ import { BlogItem, TrainingItem } from '../types';
 
 export const FIELD_CONFIG = [
     // Settings
-    { section: 'settings', category: 'Brendinq', field: 'siteLogo', label: 'Saytın Logosu', type: 'image' },
+    { section: 'settings', category: 'Brendinq', field: 'navbarLogo', label: 'Top Navbar Logosu', type: 'image' },
+    { section: 'settings', category: 'Brendinq', field: 'footerLogo', label: 'Footer Logosu', type: 'image' },
     { section: 'settings', category: 'Brendinq', field: 'siteTitle', label: 'Saytın Adı (Title)' },
     { section: 'settings', category: 'SEO və Meta', field: 'siteDescription', label: 'Sayt Təsviri (Description)', multiline: true },
     { section: 'settings', category: 'SEO və Meta', field: 'seoKeywords', label: 'Açar Sözlər (Keywords)' },

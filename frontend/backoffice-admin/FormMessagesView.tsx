@@ -1,9 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Mail, Briefcase, GraduationCap, Calendar, Clock, Trash2 } from 'lucide-react';
-import { fetchSubmissions, FormSubmission, updateSubmissionStatus } from '../utils/formSubmissions';
+import { fetchSubmissions, FormSubmission, updateSubmissionStatus, deleteSubmission } from '../utils/formSubmissions';
 import { toast } from 'react-toastify';
-import { supabase } from '../lib/supabaseClient';
 
 const FormMessagesView: React.FC = () => {
     const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
@@ -29,9 +28,8 @@ const FormMessagesView: React.FC = () => {
     const handleDelete = async (id: string) => {
         if (!confirm('Bu müraciəti silmək istədiyinizə əminsiniz?')) return;
         try {
-            if (!supabase) return;
-            const { error } = await supabase.from('form_submissions').delete().eq('id', id);
-            if (error) throw error;
+            const { success } = await deleteSubmission(id);
+            if (!success) throw new Error();
             setSubmissions(prev => prev.filter(s => s.id !== id));
             toast.info('Müraciət silindi.');
         } catch (err) {

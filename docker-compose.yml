@@ -1,15 +1,34 @@
 version: '3.8'
 
 services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: azfin_db
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: azfin_user
+      MYSQL_PASSWORD: azfin_password
+    volumes:
+      - /datastore/azfin/mysql:/var/lib/mysql
+    networks:
+      - edge
+
   azfin-backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     image: azfin-backend:latest
     restart: unless-stopped
+    depends_on:
+      - db
     environment:
       PORT: "3001"
       UPLOADS_DIR: "/app/uploads"
+      DB_HOST: db
+      DB_USER: azfin_user
+      DB_PASSWORD: azfin_password
+      DB_NAME: azfin_db
     volumes:
       - /datastore/azfin/uploads:/app/uploads
     networks:
@@ -27,8 +46,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_SUPABASE_URL=https://voiqybpnzxqlibpxhwve.supabase.co
-        - VITE_SUPABASE_ANON_KEY=sb_publishable_izbwW0kbIO8PaKrnb8mfdA_dUFSLjnh
+        - VITE_API_BASE_URL=https://azfin.octotech.az/api
     image: azfin-frontend:latest
     restart: unless-stopped
     networks:
@@ -39,6 +57,25 @@ services:
       - 'traefik.http.routers.azfin.rule=Host(`azfin.az`) || Host(`azfin.octotech.az`)'
       - 'traefik.http.routers.azfin.entrypoints=web'
       - 'traefik.http.services.azfin.loadbalancer.server.port=901'
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+      UPLOAD_LIMIT: 64M
+    networks:
+      - edge
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=edge'
+      - 'traefik.http.routers.pma.rule=Host(`pma.octotech.az`)'
+      - 'traefik.http.routers.pma.entrypoints=web'
+      - 'traefik.http.services.pma.loadbalancer.server.port=80'
 
 networks:
   edge:

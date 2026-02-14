@@ -1,5 +1,4 @@
-
-import { supabase } from '../lib/supabaseClient';
+import { apiClient } from '../lib/apiClient';
 
 export interface FormSubmission {
     id?: string;
@@ -10,50 +9,46 @@ export interface FormSubmission {
 }
 
 export const submitForm = async (type: FormSubmission['type'], data: any) => {
-    if (!supabase) return { error: 'Supabase not configured' };
-
-    const { data: result, error } = await supabase
-        .from('form_submissions')
-        .insert([
-            {
-                type,
-                form_data: data,
-            },
-        ])
-        .select();
-
-    return { result, error };
+    try {
+        await apiClient.post('/submissions', { type, form_data: data });
+        return { result: { success: true }, error: null };
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        return { result: null, error };
+    }
 };
 
 export const fetchSubmissions = async (type?: FormSubmission['type']) => {
-    if (!supabase) return [];
-
-    let query = supabase
-        .from('form_submissions')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (type) {
-        query = query.eq('type', type);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
+    try {
+        const data = await apiClient.get('/submissions');
+        let submissions = data as FormSubmission[];
+        if (type) {
+            submissions = submissions.filter(s => s.type === type);
+        }
+        return submissions;
+    } catch (error) {
         console.error('Error fetching submissions:', error);
         return [];
     }
-
-    return data as FormSubmission[];
 };
 
 export const updateSubmissionStatus = async (id: string, status: FormSubmission['status']) => {
-    if (!supabase) return { error: 'Supabase not configured' };
-
-    const { data, error } = await supabase
-        .from('form_submissions')
-        .update({ status })
-        .eq('id', id);
-
-    return { data, error };
+    try {
+        await apiClient.patch(`/submissions/${id}`, { status });
+        return { data: { success: true }, error: null };
+    } catch (error) {
+        console.error('Error updating submission status:', error);
+        return { data: null, error };
+    }
 };
+
+export const deleteSubmission = async (id: string) => {
+    try {
+        await apiClient.delete(`/submissions/${id}`);
+        return { success: true, error: null };
+    } catch (error) {
+        console.error('Error deleting submission:', error);
+        return { success: false, error };
+    }
+};
+

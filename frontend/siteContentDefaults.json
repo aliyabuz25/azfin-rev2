@@ -2,7 +2,8 @@
   "settings": {
     "siteTitle": "AZFİN GROUP MMC",
     "siteDescription": "Professional Maliyyə, Muhasibatlıq və Audit Xidmətləri",
-    "siteLogo": "",
+    "navbarLogo": "",
+    "footerLogo": "",
     "seoKeywords": "audit, vergi, muhasibat, bakı, azerbaycan, konsaltinq",
     "contactEmail": "office@azfin.az",
     "contactPhone": "+994 50 200 00 00"

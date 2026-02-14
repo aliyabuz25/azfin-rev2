@@ -1,6 +1,5 @@
-import { supabase } from '../lib/supabaseClient';
+import { apiClient } from '../lib/apiClient';
 import { BlogItem, TrainingItem } from '../types';
-import { ensureLocalBlogPosts, readLocalBlogPosts } from './localBlogStore';
 
 const mapBlogRow = (row: any): BlogItem => ({
   id: row.id,
@@ -16,13 +15,9 @@ const mapBlogRow = (row: any): BlogItem => ({
 
 export const normalizeStatus = (status?: string): TrainingItem['status'] => {
   const s = String(status || '').toLowerCase().trim();
-  // Ongoing variations
   if (s === 'ongoing' || s === 'davam edir' || s.includes('davam') || s === 'aktiv') return 'ongoing';
-  // Completed variations
   if (s === 'completed' || s === 'başa çatıb' || s === 'başa çatib' || s.includes('başa') || s === 'bitib' || s === 'yekun') return 'completed';
-  // Upcoming variations (default)
   if (s === 'upcoming' || s === 'tezliklə' || s === 'tezlikle' || s === 'yaxında' || s.includes('tez') || s.includes('yaxın')) return 'upcoming';
-
   return 'upcoming';
 };
 
@@ -31,7 +26,7 @@ const mapTrainingRow = (row: any): TrainingItem => ({
   title: row.title || '',
   description: row.description || row.summary || '',
   fullContent: row.fullContent || row.full_content || row.content || '',
-  syllabus: Array.isArray(row.syllabus) ? row.syllabus : (typeof row.syllabus === 'string' ? row.syllabus.split('\n').filter(Boolean) : []),
+  syllabus: typeof row.syllabus === 'string' ? JSON.parse(row.syllabus) : (Array.isArray(row.syllabus) ? row.syllabus : []),
   startDate: row.startDate || row.start_date || row.date || '',
   duration: row.duration || '',
   level: row.level || 'Bütün səviyyələr',
@@ -40,77 +35,41 @@ const mapTrainingRow = (row: any): TrainingItem => ({
 });
 
 export const fetchBlogPosts = async (): Promise<BlogItem[]> => {
-  if (!supabase) {
-    console.warn('Supabase disabled; returning local blog list.');
-    return ensureLocalBlogPosts();
-  }
-
-  // Fetching all posts as requested "her blog görünmeli"
-  const { data, error } = await supabase
-    .from('blog_posts')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Failed to fetch blog posts from Supabase:', error);
+  try {
+    const data = await apiClient.get('/blog');
+    return (data ?? []).map(mapBlogRow);
+  } catch (error) {
+    console.error('Failed to fetch blog posts:', error);
     return [];
   }
-
-  return (data ?? []).map(mapBlogRow);
 };
 
 export const fetchBlogPostById = async (id: string): Promise<BlogItem | null> => {
-  if (!supabase) {
-    console.warn('Supabase disabled; checking local blog cache.');
-    const posts = readLocalBlogPosts();
+  try {
+    const posts = await fetchBlogPosts();
     return posts.find((post) => post.id === id) ?? null;
-  }
-
-  const { data, error } = await supabase.from('blog_posts').select('*').eq('id', id).single();
-
-  if (error) {
-    console.error('Failed to fetch blog post', error);
+  } catch (err) {
+    console.error('Error fetching blog post by id:', err);
     return null;
   }
-
-  if (!data) return null;
-
-  return mapBlogRow(data);
 };
 
 export const fetchTrainings = async (): Promise<TrainingItem[]> => {
-  if (!supabase) {
-    console.warn('Supabase disabled; returning empty training list.');
+  try {
+    const data = await apiClient.get('/trainings');
+    return (data ?? []).map(mapTrainingRow);
+  } catch (error) {
+    console.error('Failed to fetch trainings:', error);
     return [];
   }
-
-  const { data, error } = await supabase
-    .from('trainings')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Failed to fetch trainings', error);
-    return [];
-  }
-
-  return (data ?? []).map(mapTrainingRow);
 };
 
 export const fetchTrainingById = async (id: string): Promise<TrainingItem | null> => {
-  if (!supabase) {
-    console.warn('Supabase disabled; cannot fetch training.');
+  try {
+    const trainings = await fetchTrainings();
+    return trainings.find((t) => t.id === id) ?? null;
+  } catch (err) {
+    console.error('Error fetching training by id:', err);
     return null;
   }
-
-  const { data, error } = await supabase.from('trainings').select('*').eq('id', id).single();
-
-  if (error) {
-    console.error('Failed to fetch training', error);
-    return null;
-  }
-
-  if (!data) return null;
-
-  return mapTrainingRow(data);
 };

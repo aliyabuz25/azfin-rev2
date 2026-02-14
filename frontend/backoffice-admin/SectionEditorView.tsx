@@ -464,26 +464,40 @@ const SectionEditorView: React.FC<SectionEditorViewProps> = ({
 
                                                 {type === 'image' ? (
                                                     <div className="space-y-4">
-                                                        {val && (
-                                                            <div className="relative w-full aspect-video rounded-3xl overflow-hidden border border-slate-100 shadow-sm">
-                                                                <img src={val} alt="Preview" className="w-full h-full object-cover" />
-                                                                <button onClick={() => handleSectionInputChange(key, '')} className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur shadow-lg rounded-xl text-red-500 hover:text-red-700 transition-all">
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                </button>
+                                                        {val ? (
+                                                            <div className="space-y-4 animate-in zoom-in-95 duration-300">
+                                                                <div className="relative group/img overflow-hidden rounded-[32px] border border-slate-100 bg-slate-50 aspect-video flex items-center justify-center shadow-inner">
+                                                                    <img src={val} alt="Preview" className="max-w-[70%] max-h-[70%] object-contain transition-transform group-hover/img:scale-110 duration-700" />
+                                                                    <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex items-center justify-center gap-4 backdrop-blur-[4px]">
+                                                                        {supabaseReady && (
+                                                                            <label className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-primary hover:bg-slate-50 transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest shadow-2xl hover:scale-105 active:scale-95">
+                                                                                <RotateCcw className="h-4 w-4" /> DƏYİŞDİR
+                                                                                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, key, (url) => handleSectionInputChange(key, url))} />
+                                                                            </label>
+                                                                        )}
+                                                                        <button onClick={() => handleSectionInputChange(key, '')} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all text-[10px] font-black uppercase tracking-widest shadow-2xl hover:scale-105 active:scale-95">
+                                                                            <Trash2 className="h-4 w-4" /> SİL
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur px-4 py-2 rounded-full border border-white/50 shadow-sm opacity-100 group-hover/img:opacity-0 transition-opacity">
+                                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">YÜKLƏNİB</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-center gap-4 animate-in slide-in-from-bottom-2 duration-300">
+                                                                <div className="flex-1 relative">
+                                                                    <input type="text" value={val} onChange={(e) => handleSectionInputChange(key, e.target.value)} className="w-full bg-slate-50 border-none rounded-[20px] px-6 py-4 text-sm font-medium text-primary focus:ring-4 focus:ring-primary/5 outline-none pr-12 transition-all shadow-inner" placeholder="Şəkil URL-i daxil edin və ya yükləyin..." />
+                                                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 transition-transform group-focus-within/img:scale-110"><Image className="h-5 w-5" /></div>
+                                                                </div>
+                                                                {supabaseReady && (
+                                                                    <label className="flex items-center gap-2 px-8 py-4 rounded-[20px] bg-primary text-white hover:bg-accent transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95">
+                                                                        <Upload className="h-4 w-4" /> YÜKLƏ
+                                                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, key, (url) => handleSectionInputChange(key, url))} />
+                                                                    </label>
+                                                                )}
                                                             </div>
                                                         )}
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="flex-1 relative">
-                                                                <input type="text" value={val} onChange={(e) => handleSectionInputChange(key, e.target.value)} className="w-full bg-slate-50 border-none rounded-[20px] px-6 py-4 text-sm font-medium text-primary focus:ring-4 focus:ring-primary/5 outline-none pr-12" placeholder="Şəkil URL-i daxil edin və ya yükləyin..." />
-                                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300"><Image className="h-5 w-5" /></div>
-                                                            </div>
-                                                            {supabaseReady && (
-                                                                <label className="flex items-center gap-2 px-6 py-4 rounded-[20px] bg-primary text-white hover:bg-primary-hover transition-all cursor-pointer text-[10px] font-black uppercase tracking-widest">
-                                                                    <Upload className="h-4 w-4" /> YÜKLƏ
-                                                                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e, key, (url) => handleSectionInputChange(key, url))} />
-                                                                </label>
-                                                            )}
-                                                        </div>
                                                     </div>
                                                 ) : isMultiline ? (
                                                     <textarea

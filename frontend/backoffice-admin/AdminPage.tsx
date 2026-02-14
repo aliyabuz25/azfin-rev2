@@ -1,6 +1,6 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
+import { apiClient } from '../lib/apiClient';
 import {
   fetchAdminBlogPosts,
   upsertBlogPost,
@@ -219,7 +219,7 @@ const Admin: React.FC = () => {
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const trainingContentRef = useRef<HTMLTextAreaElement>(null);
 
-  const supabaseReady = isSupabaseConfigured;
+  const supabaseReady = true; // Renamed to keep compatibility with existing logic, but now it's always ready with the new API
 
   // Load Initial Data
   useEffect(() => {
@@ -399,7 +399,6 @@ const Admin: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!supabaseReady) return;
     setSaving(true);
     try {
       await upsertSiteSettings(draft);
@@ -423,7 +422,6 @@ const Admin: React.FC = () => {
   };
 
   const handlePushSitemap = async () => {
-    if (!supabaseReady) return;
     setSaving(true);
     try {
       await upsertSiteSettings({ ...draft, navigation: JSON.parse(editorValue) });
@@ -451,7 +449,6 @@ const Admin: React.FC = () => {
   const handleTrainingChange = (f: string, v: any) => setTrainingForm(prev => ({ ...prev, [f]: v }));
 
   const handleBlogSave = async () => {
-    if (!supabaseReady) return;
     setBlogSaving(true);
     try {
       const item = { ...blogForm, id: selectedBlogId || generateId() };
@@ -468,7 +465,6 @@ const Admin: React.FC = () => {
   };
 
   const handleTrainingSave = async () => {
-    if (!supabaseReady) return;
     setTrainingSaving(true);
     try {
       const item = { ...trainingForm, id: selectedTrainingId || generateId() };
@@ -522,19 +518,7 @@ const Admin: React.FC = () => {
     if (!file) return;
     setImageLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
+      const data = await apiClient.upload(file);
       const publicUrl = data.url; // This is the relative path /uploads/filename.ext
 
       if (field === 'content' && textRef) {
@@ -557,19 +541,12 @@ const Admin: React.FC = () => {
     setLoading(true);
 
     try {
-      if (!supabase) {
-        throw new Error('Supabase yapılandırılmamış. Lütfen çevre değişkenlerini kontrol edin.');
-      }
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('username', loginUsername)
-        .eq('password', loginPassword)
-        .single();
+      const data = await apiClient.post('/login', {
+        username: loginUsername,
+        password: loginPassword,
+      });
 
-      if (error || !data) throw new Error('İstifadəçi adı və ya şifrə yanlışdır.');
-
-      const adminSession = { user: data, access_token: 'custom-token' };
+      const adminSession = { user: data.user, access_token: data.access_token };
       localStorage.setItem('admin_session', JSON.stringify(adminSession));
       setSession(adminSession);
     } catch (err: any) {

@@ -5,11 +5,12 @@ import { SERVICES } from '../constants';
 import { TrainingItem } from '../types';
 import { fetchTrainings } from '../utils/fetchData';
 import { useContent } from '../lib/ContentContext';
+import { Loader2 } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const [trainings, setTrainings] = useState<TrainingItem[]>([]);
   const [loadingTrainings, setLoadingTrainings] = useState(true);
-  const { content: siteContent } = useContent();
+  const { content: siteContent, loading: contentLoading } = useContent();
   const footer = siteContent.footer;
   const nav = siteContent.navigation;
 
@@ -43,7 +44,19 @@ const Footer: React.FC = () => {
           {/* Logo and Description */}
           <div className="space-y-8">
             <Link to="/" className="inline-block">
-              <span className="font-black text-4xl tracking-tighter text-white">AZFIN</span>
+              {contentLoading ? (
+                <div className="flex items-center justify-center w-12 h-12 md:w-20 md:h-20">
+                  <Loader2 className="h-6 w-6 text-[#3b82f6] animate-spin" />
+                </div>
+              ) : siteContent.settings?.footerLogo ? (
+                <img
+                  src={siteContent.settings.footerLogo}
+                  alt={siteContent.settings.siteTitle || 'AZFIN'}
+                  className="h-12 md:h-20 object-contain"
+                />
+              ) : (
+                <span className="font-black text-4xl tracking-tighter text-white">AZFIN</span>
+              )}
             </Link>
             <p className="text-slate-400 leading-relaxed text-[15px] font-medium max-w-xs">
               {footer.description}

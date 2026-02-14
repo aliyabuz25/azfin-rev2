@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
       port: 901,
       host: '0.0.0.0',
       proxy: {
-        '/api': 'http://azfin-backend:3001',
-        '/uploads': 'http://azfin-backend:3001',
+        '/api': 'http://localhost:3001',
+        '/uploads': 'http://localhost:3001',
       },
     },
     plugins: [react()],

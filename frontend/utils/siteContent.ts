@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { apiClient } from '../lib/apiClient';
 import siteContentDefaults from '../siteContentDefaults.json';
 
 export type SiteContent = typeof siteContentDefaults;
@@ -9,29 +9,11 @@ export const DEFAULT_SITE_CONTENT: SiteContent = siteContentDefaults;
 const FIXED_SITE_SETTINGS_ID = 1;
 
 export const fetchSiteSettings = async () => {
-  if (!supabase) {
-    console.warn('Skipping Supabase fetch for site settings; using defaults.');
+  try {
+    const content = await apiClient.get('/settings');
     return {
       id: FIXED_SITE_SETTINGS_ID,
-      content: {},
-    };
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('site_settings')
-      .select('id, content')
-      .eq('id', FIXED_SITE_SETTINGS_ID)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      console.error('Failed to fetch site settings', error);
-      throw error;
-    }
-
-    return {
-      id: data?.id ?? FIXED_SITE_SETTINGS_ID,
-      content: data?.content ?? {},
+      content: content || {},
     };
   } catch (err) {
     console.error('Error in fetchSiteSettings:', err);
@@ -43,19 +25,13 @@ export const fetchSiteSettings = async () => {
 };
 
 export const upsertSiteSettings = async (content, id = FIXED_SITE_SETTINGS_ID) => {
-  if (!supabase) {
-    const error = new Error('Supabase is not configured');
-    console.warn('Unable to save site settings; Supabase credentials are missing.');
+  try {
+    await apiClient.post('/settings', content);
+    return { data: { id, content }, error: null };
+  } catch (error) {
+    console.error('Error in upsertSiteSettings:', error);
     return { data: null, error };
   }
-
-  const payload = {
-    id: id || FIXED_SITE_SETTINGS_ID,
-    content,
-  };
-
-  const { data, error } = await supabase.from('site_settings').upsert(payload, { onConflict: 'id' }).select('id, content');
-  return { data, error };
 };
 
 export const mergeContent = (base, override) => {
@@ -75,7 +51,6 @@ export const mergeContent = (base, override) => {
       });
       if (servicesArray.length > 0) {
         (value as any).list = servicesArray;
-        // Optional: remove old numeric keys? Better keep them for safety or just use the new list
       }
     }
 
