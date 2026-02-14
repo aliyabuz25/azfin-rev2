@@ -429,13 +429,25 @@ const Admin: React.FC = () => {
   const handleBlogSave = async () => {
     setBlogSaving(true);
     try {
+      const isNew = !selectedBlogId;
       const item = { ...blogForm, id: selectedBlogId || generateId() };
-      await upsertBlogPost(item as BlogItem);
+      const { data, error } = await upsertBlogPost(item as BlogItem);
+
+      if (error) throw error;
+
       const updated = await fetchAdminBlogPosts();
       setBlogPosts(updated);
-      setSelectedBlogId(item.id);
-      toast.success('Yazı yadda saxlanıldı.');
+
+      // If it was a new post, reset form to allow adding another
+      if (isNew) {
+        resetBlogForm();
+        toast.success('Yeni yazı əlavə edildi.');
+      } else {
+        setSelectedBlogId(item.id);
+        toast.success('Yazı yadda saxlanıldı.');
+      }
     } catch (err) {
+      console.error('Save error:', err);
       toast.error('Xəta baş verdi.');
     } finally {
       setBlogSaving(false);
@@ -445,13 +457,24 @@ const Admin: React.FC = () => {
   const handleTrainingSave = async () => {
     setTrainingSaving(true);
     try {
+      const isNew = !selectedTrainingId;
       const item = { ...trainingForm, id: selectedTrainingId || generateId() };
-      await upsertTraining(item as TrainingItem);
+      const { data, error } = await upsertTraining(item as TrainingItem);
+
+      if (error) throw error;
+
       const updated = await fetchAdminTrainings();
       setTrainings(updated);
-      setSelectedTrainingId(item.id);
-      toast.success('Təlim yadda saxlanıldı.');
+
+      if (isNew) {
+        resetTrainingForm();
+        toast.success('Yeni təlim əlavə edildi.');
+      } else {
+        setSelectedTrainingId(item.id);
+        toast.success('Təlim yadda saxlanıldı.');
+      }
     } catch (err) {
+      console.error('Save error:', err);
       toast.error('Xəta baş verdi.');
     } finally {
       setTrainingSaving(false);
