@@ -21,20 +21,23 @@ Quill.register('modules/blotFormatter', BlotFormatter);
 const Align = Quill.import('attributors/style/align') as any;
 Quill.register(Align, true);
 
-// Quill 2.0 manually defining style attributors to avoid import errors
+// Quill 2.0 manually defining style attributors using the same constructor as Align
 const Parchment = Quill.import('parchment') as any;
+// Align is a class/constructor for style attributors
+const StyleAttributor = Align.constructor && Align.constructor.name === 'Function' ? Align : Object.getPrototypeOf(Align).constructor;
 
-const Display = new Parchment.Attributor.Style('display', 'display', {
+// If the above is too complex, let's try a simpler fallback
+const Display = new Align('display', 'display', {
     scope: Parchment.Scope.INLINE
 });
 Quill.register(Display, true);
 
-const Margin = new Parchment.Attributor.Style('margin', 'margin', {
+const Margin = new Align('margin', 'margin', {
     scope: Parchment.Scope.INLINE
 });
 Quill.register(Margin, true);
 
-const Float = new Parchment.Attributor.Style('float', 'float', {
+const Float = new Align('float', 'float', {
     scope: Parchment.Scope.INLINE
 });
 Quill.register(Float, true);
