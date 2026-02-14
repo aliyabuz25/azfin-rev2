@@ -21,13 +21,22 @@ Quill.register('modules/blotFormatter', BlotFormatter);
 const Align = Quill.import('attributors/style/align') as any;
 Quill.register(Align, true);
 
-const Display = Quill.import('attributors/style/display') as any;
+// Quill 2.0 manually defining style attributors to avoid import errors
+const Parchment = Quill.import('parchment') as any;
+
+const Display = new Parchment.Attributor.Style('display', 'display', {
+    scope: Parchment.Scope.INLINE
+});
 Quill.register(Display, true);
 
-const Margin = Quill.import('attributors/style/margin') as any;
+const Margin = new Parchment.Attributor.Style('margin', 'margin', {
+    scope: Parchment.Scope.INLINE
+});
 Quill.register(Margin, true);
 
-const Float = Quill.import('attributors/style/float') as any;
+const Float = new Parchment.Attributor.Style('float', 'float', {
+    scope: Parchment.Scope.INLINE
+});
 Quill.register(Float, true);
 
 const ImageBlot = Quill.import('formats/image') as any;
