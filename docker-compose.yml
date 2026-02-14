@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   db:
+    container_name: azfin-mysql
     image: mysql:8.0
     restart: unless-stopped
     environment:
@@ -15,6 +16,7 @@ services:
       - edge
 
   azfin-backend:
+    container_name: azfin-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -41,11 +43,10 @@ services:
       - 'traefik.http.services.azfin-api.loadbalancer.server.port=3001'
 
   azfin-frontend:
+    container_name: azfin-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        - VITE_API_BASE_URL=https://azfin.octotech.az/api
     restart: unless-stopped
     networks:
       - edge
@@ -57,6 +58,7 @@ services:
       - 'traefik.http.services.azfin.loadbalancer.server.port=901'
 
   phpmyadmin:
+    container_name: azfin-phpmyadmin
     image: phpmyadmin:latest
     restart: unless-stopped
     depends_on:
