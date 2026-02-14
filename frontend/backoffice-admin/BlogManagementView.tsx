@@ -18,6 +18,9 @@ Quill.register(Font, true);
 
 Quill.register('modules/blotFormatter', BlotFormatter);
 
+const Align = Quill.import('attributors/style/align') as any;
+Quill.register(Align, true);
+
 interface BlogManagementViewProps {
     blogMode: 'blog' | 'training';
     setBlogMode: (mode: 'blog' | 'training') => void;
@@ -132,7 +135,9 @@ const BlogManagementView: React.FC<BlogManagementViewProps> = ({
                 image: imageHandler
             }
         },
-        blotFormatter: {},
+        blotFormatter: {
+            // Options can be added here
+        },
         clipboard: {
             matchVisual: false,
         }
@@ -224,6 +229,42 @@ const BlogManagementView: React.FC<BlogManagementViewProps> = ({
                 .ql-font-roboto { font-family: 'Roboto', sans-serif; }
                 .ql-font-arial { font-family: Arial, sans-serif; }
                 .ql-font-georgia { font-family: Georgia, serif; }
+                
+                /* Blot Formatter UI */
+                .blot-formatter__toolbar {
+                    background: white !important;
+                    border: 1px solid #f1f5f9 !important;
+                    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+                    border-radius: 12px !important;
+                    padding: 4px !important;
+                    gap: 4px !important;
+                }
+                .blot-formatter__toolbar-button {
+                    border: none !important;
+                    border-radius: 8px !important;
+                    width: 32px !important;
+                    height: 32px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    transition: all 0.2s !important;
+                }
+                .blot-formatter__toolbar-button:hover {
+                    background: #f8fafc !important;
+                }
+                .blot-formatter__toolbar-button--selected {
+                    background: #f1f5f9 !important;
+                    filter: none !important;
+                    color: #3b82f6 !important;
+                }
+                .blot-formatter__toolbar-button svg {
+                    width: 18px !important;
+                    height: 18px !important;
+                }
+                .blot-formatter__resizer {
+                    border: 2px solid #3b82f6 !important;
+                    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+                }
             `}</style>
             {/* List View */}
             <div className="space-y-10 animate-in fade-in duration-500">
