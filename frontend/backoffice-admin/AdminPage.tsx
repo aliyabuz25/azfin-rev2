@@ -144,28 +144,6 @@ const IconPicker: React.FC<{ value?: string; onChange: (value: string) => void }
   );
 };
 
-const insertBBCode = (
-  ref: React.RefObject<HTMLTextAreaElement>,
-  open: string,
-  close: string,
-  callback: (val: string) => void
-) => {
-  const textarea = ref.current;
-  if (!textarea) return;
-
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const text = textarea.value;
-  const selectedText = text.substring(start, end);
-  const newValue = text.substring(0, start) + `${open}${selectedText}${close}` + text.substring(end);
-
-  callback(newValue);
-
-  setTimeout(() => {
-    textarea.focus();
-    textarea.setSelectionRange(start + open.length, start + open.length + selectedText.length);
-  }, 0);
-};
 
 const Admin: React.FC = () => {
   const [session, setSession] = useState<any>(null);
@@ -521,11 +499,7 @@ const Admin: React.FC = () => {
       const data = await apiClient.upload(file);
       const publicUrl = data.url; // This is the relative path /uploads/filename.ext
 
-      if (field === 'content' && textRef) {
-        insertBBCode(textRef, `[img]${publicUrl}[/img]`, '', callback);
-      } else {
-        callback(publicUrl);
-      }
+      callback(publicUrl);
       toast.success('Şəkil yükləndi.');
     } catch (err) {
       console.error('Image upload error:', err);
@@ -711,9 +685,6 @@ const Admin: React.FC = () => {
                 handleTrainingDelete={handleTrainingDelete}
                 supabaseReady={supabaseReady}
                 handleImageUpload={handleImageUpload}
-                insertBBCode={insertBBCode}
-                contentRef={contentRef}
-                trainingContentRef={trainingContentRef}
                 blogSaving={blogSaving}
                 trainingSaving={trainingSaving}
                 imageLoading={imageLoading}

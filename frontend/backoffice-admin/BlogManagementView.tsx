@@ -1,5 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Settings, Upload, X, Check, RotateCcw, Bold, Italic, List, Quote, Link as LinkIcon, Image, Trash2, Plus, Edit, BookOpen, GraduationCap } from 'lucide-react';
 import { BlogItem, TrainingItem } from '../types';
 
@@ -24,9 +26,6 @@ interface BlogManagementViewProps {
     handleTrainingDelete: (id: string) => void;
     supabaseReady: boolean;
     handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>, field: string, callback: (url: string) => void, ref?: any) => void;
-    insertBBCode: (ref: React.RefObject<HTMLTextAreaElement>, open: string, close: string, callback: (val: string) => void) => void;
-    contentRef: React.RefObject<HTMLTextAreaElement>;
-    trainingContentRef: React.RefObject<HTMLTextAreaElement>;
     blogSaving: boolean;
     trainingSaving: boolean;
     imageLoading: boolean;
@@ -65,15 +64,31 @@ const BlogManagementView: React.FC<BlogManagementViewProps> = ({
     handleTrainingDelete,
     supabaseReady,
     handleImageUpload,
-    insertBBCode,
-    contentRef,
-    trainingContentRef,
     blogSaving,
     trainingSaving,
     imageLoading
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isBlogSection = blogMode === 'blog';
+
+    const modules = useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['link', 'image'],
+                ['clean']
+            ],
+        }
+    }), []);
+
+    const formats = [
+        'header',
+        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'list', 'bullet',
+        'link', 'image'
+    ];
 
     const openEditor = (item?: BlogItem | TrainingItem) => {
         if (item) {
@@ -98,6 +113,37 @@ const BlogManagementView: React.FC<BlogManagementViewProps> = ({
 
     return (
         <>
+            <style>{`
+                .quill {
+                    display: flex;
+                    flex-direction: column;
+                    border: none !important;
+                }
+                .ql-toolbar.ql-snow {
+                    border: none !important;
+                    background: #f8fafc;
+                    padding: 1rem !important;
+                    border-bottom: 1px solid #f1f5f9 !important;
+                    border-radius: 32px 32px 0 0 !important;
+                }
+                .ql-container.ql-snow {
+                    border: none !important;
+                    flex: 1;
+                    font-family: 'Inter', sans-serif !important;
+                }
+                .ql-editor {
+                    min-height: 500px;
+                    padding: 2.5rem !important;
+                    font-size: 1.125rem !important;
+                    line-height: 1.8 !important;
+                    color: #334155 !important;
+                }
+                .ql-editor.ql-blank::before {
+                    color: #cbd5e1 !important;
+                    font-style: normal !important;
+                    padding: 0 2.5rem !important;
+                }
+            `}</style>
             {/* List View */}
             <div className="space-y-10 animate-in fade-in duration-500">
                 <header className="bg-white rounded-[40px] p-10 border border-slate-100 shadow-sm flex items-end justify-between gap-10">
@@ -280,28 +326,14 @@ const BlogManagementView: React.FC<BlogManagementViewProps> = ({
                                         <div className="space-y-4">
                                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 block">TAM MƏZMUN</label>
                                             <div className="border border-slate-100 rounded-[32px] overflow-hidden shadow-sm group focus-within:border-accent/30 transition-all">
-                                                <div className="bg-slate-50/50 p-3 border-b border-slate-100 flex flex-wrap gap-2 items-center">
-                                                    <div className="flex bg-white rounded-xl p-1 shadow-sm border border-slate-100/50">
-                                                        <button onClick={() => insertBBCode(isBlogSection ? contentRef : trainingContentRef, '[b]', '[/b]', v => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v))} className="p-2.5 hover:bg-slate-50 rounded-lg transition text-primary"><Bold className="h-4 w-4" /></button>
-                                                        <button onClick={() => insertBBCode(isBlogSection ? contentRef : trainingContentRef, '[i]', '[/i]', v => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v))} className="p-2.5 hover:bg-slate-50 rounded-lg transition text-primary"><Italic className="h-4 w-4" /></button>
-                                                    </div>
-                                                    <div className="flex bg-white rounded-xl p-1 shadow-sm border border-slate-100/50">
-                                                        <button onClick={() => insertBBCode(isBlogSection ? contentRef : trainingContentRef, '[h1]', '[/h1]', v => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v))} className="p-2.5 hover:bg-slate-50 rounded-lg transition text-primary font-black px-2">H1</button>
-                                                        <button onClick={() => insertBBCode(isBlogSection ? contentRef : trainingContentRef, '[h2]', '[/h2]', v => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v))} className="p-2.5 hover:bg-slate-50 rounded-lg transition text-primary font-black px-2">H2</button>
-                                                    </div>
-                                                    <div className="flex bg-white rounded-xl p-1 shadow-sm border border-slate-100/50">
-                                                        <button onClick={() => insertBBCode(isBlogSection ? contentRef : trainingContentRef, '[list]', '[/list]', v => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v))} className="p-2.5 hover:bg-slate-50 rounded-lg transition text-primary"><List className="h-4 w-4" /></button>
-                                                        <button onClick={() => insertBBCode(isBlogSection ? contentRef : trainingContentRef, '[quote]', '[/quote]', v => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v))} className="p-2.5 hover:bg-slate-50 rounded-lg transition text-primary"><Quote className="h-4 w-4" /></button>
-                                                    </div>
-                                                    <div className="flex bg-white rounded-xl p-1 shadow-sm border border-slate-100/50">
-                                                        <button onClick={() => insertBBCode(isBlogSection ? contentRef : trainingContentRef, '[url=]', '[/url]', v => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v))} className="p-2.5 hover:bg-slate-50 rounded-lg transition text-primary"><LinkIcon className="h-4 w-4" /></button>
-                                                        <label className="cursor-pointer p-2.5 hover:bg-slate-50 rounded-lg transition text-primary flex items-center justify-center">
-                                                            {imageLoading ? <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" /> : <Image className="h-4 w-4" />}
-                                                            <input type="file" className="hidden" accept="image/*" disabled={!supabaseReady} onChange={(e) => handleImageUpload(e, 'content', (v) => isBlogSection ? handleBlogChange('content', v) : handleTrainingChange('fullContent', v), isBlogSection ? contentRef : trainingContentRef)} />
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <textarea ref={isBlogSection ? contentRef : trainingContentRef} rows={25} value={isBlogSection ? blogForm.content : trainingForm.fullContent} onChange={(e) => isBlogSection ? handleBlogChange('content', e.target.value) : handleTrainingChange('fullContent', e.target.value)} className="w-full p-8 text-base font-medium text-slate-700 bg-white border-none focus:ring-0 leading-relaxed resize-none custom-scrollbar" placeholder="Buraya yazmağa başlayın..." />
+                                                <ReactQuill
+                                                    theme="snow"
+                                                    value={isBlogSection ? blogForm.content : trainingForm.fullContent}
+                                                    onChange={(val) => isBlogSection ? handleBlogChange('content', val) : handleTrainingChange('fullContent', val)}
+                                                    modules={modules}
+                                                    formats={formats}
+                                                    placeholder="Buraya yazmağa başlayın..."
+                                                />
                                             </div>
                                         </div>
                                     </div>
