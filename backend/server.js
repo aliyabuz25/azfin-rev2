@@ -53,6 +53,10 @@ function normalizeSyllabus(value) {
     return [];
 }
 
+function toSqlValue(value) {
+    return value === undefined ? null : value;
+}
+
 async function initDb() {
     try {
         pool = mysql.createPool(dbConfig);
@@ -274,18 +278,25 @@ app.get('/api/trainings', async (req, res) => {
 app.post('/api/trainings', async (req, res) => {
     try {
         const t = req.body;
+        if (!t || !t.id || !t.title) {
+            return res.status(400).json({ error: 'id və title mütləqdir.' });
+        }
+
         const syllabus = normalizeSyllabus(t.syllabus);
         const syllabusJson = JSON.stringify(syllabus);
+        const insertValues = [
+            t.id, t.title, t.description, t.fullContent, syllabusJson, t.startDate, t.duration, t.level, t.image, t.status, t.certLabel, t.infoTitle, t.aboutTitle, t.syllabusTitle, t.durationLabel, t.startLabel, t.statusLabel, t.sidebarNote, t.highlightWord
+        ].map(toSqlValue);
+        const updateValues = [
+            t.title, t.description, t.fullContent, syllabusJson, t.startDate, t.duration, t.level, t.image, t.status, t.certLabel, t.infoTitle, t.aboutTitle, t.syllabusTitle, t.durationLabel, t.startLabel, t.statusLabel, t.sidebarNote, t.highlightWord
+        ].map(toSqlValue);
         const query = `
             INSERT INTO trainings (id, title, description, fullContent, syllabus, startDate, duration, level, image, status, certLabel, infoTitle, aboutTitle, syllabusTitle, durationLabel, startLabel, statusLabel, sidebarNote, highlightWord)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
                 title=?, description=?, fullContent=?, syllabus=?, startDate=?, duration=?, level=?, image=?, status=?, certLabel=?, infoTitle=?, aboutTitle=?, syllabusTitle=?, durationLabel=?, startLabel=?, statusLabel=?, sidebarNote=?, highlightWord=?
         `;
-        const params = [
-            t.id, t.title, t.description, t.fullContent, syllabusJson, t.startDate, t.duration, t.level, t.image, t.status, t.certLabel, t.infoTitle, t.aboutTitle, t.syllabusTitle, t.durationLabel, t.startLabel, t.statusLabel, t.sidebarNote, t.highlightWord,
-            t.title, t.description, t.fullContent, syllabusJson, t.startDate, t.duration, t.level, t.image, t.status, t.certLabel, t.infoTitle, t.aboutTitle, t.syllabusTitle, t.durationLabel, t.startLabel, t.statusLabel, t.sidebarNote, t.highlightWord
-        ];
+        const params = [...insertValues, ...updateValues];
         await pool.execute(query, params);
         res.json({ success: true });
     } catch (err) {
