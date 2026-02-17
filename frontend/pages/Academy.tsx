@@ -105,7 +105,7 @@ const Academy: React.FC = () => {
                       <ImageWithFallback
                         src={training.image}
                         alt={training.title}
-                        imgClassName={`w-full h-full object-cover transition-transform duration-700 ${!isCompleted ? 'group-hover:scale-105' : ''}`}
+                        imgClassName="w-full h-full object-contain bg-slate-50"
                         placeholderClassName="w-full h-full"
                         placeholderText="no-image"
                       />

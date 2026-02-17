@@ -87,7 +87,7 @@ const TrainingDetail: React.FC = () => {
               <ImageWithFallback
                 src={training.image}
                 alt={training.title}
-                imgClassName="w-full h-full object-cover"
+                imgClassName="w-full h-full object-contain bg-slate-50"
                 placeholderClassName="w-full h-full"
                 placeholderText="no-image"
               />
