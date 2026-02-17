@@ -9,6 +9,8 @@ const mysql = require('mysql2/promise');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
+const DB_RETRY_DELAY_MS = Number(process.env.DB_RETRY_DELAY_MS || 5000);
+const DB_MAX_RETRIES = Number(process.env.DB_MAX_RETRIES || 0); // 0 => unlimited
 
 // DB Config
 const dbConfig = {
@@ -22,6 +24,8 @@ const dbConfig = {
 };
 
 let pool;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function ensureColumn(tableName, columnName, definition) {
     const [rows] = await pool.execute(
@@ -154,12 +158,34 @@ async function initDb() {
 
         console.log('Database tables verified/created');
     } catch (err) {
-        console.error('Database initialization failed:', err);
-        process.exit(1);
+        if (pool) {
+            try {
+                await pool.end();
+            } catch (_) {
+                // noop
+            }
+            pool = null;
+        }
+        throw err;
     }
 }
 
-initDb();
+async function initDbWithRetry() {
+    let attempt = 0;
+    for (;;) {
+        attempt += 1;
+        try {
+            await initDb();
+            return;
+        } catch (err) {
+            console.error(`Database initialization failed (attempt ${attempt}):`, err.message);
+            if (DB_MAX_RETRIES > 0 && attempt >= DB_MAX_RETRIES) {
+                process.exit(1);
+            }
+            await sleep(DB_RETRY_DELAY_MS);
+        }
+    }
+}
 
 // Ensure uploads directory exists
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -374,7 +400,12 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Backend server running on port ${PORT}`);
-    console.log(`Uploads directory: ${UPLOADS_DIR}`);
-});
+async function startServer() {
+    await initDbWithRetry();
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Backend server running on port ${PORT}`);
+        console.log(`Uploads directory: ${UPLOADS_DIR}`);
+    });
+}
+
+startServer();
