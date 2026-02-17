@@ -23,6 +23,36 @@ const dbConfig = {
 
 let pool;
 
+async function ensureColumn(tableName, columnName, definition) {
+    const [rows] = await pool.execute(
+        `SELECT 1
+         FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = ?
+           AND TABLE_NAME = ?
+           AND COLUMN_NAME = ?
+         LIMIT 1`,
+        [dbConfig.database, tableName, columnName]
+    );
+
+    if (rows.length === 0) {
+        await pool.execute(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`);
+        console.log(`Added missing column ${tableName}.${columnName}`);
+    }
+}
+
+function normalizeSyllabus(value) {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+        try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+            return [];
+        }
+    }
+    return [];
+}
+
 async function initDb() {
     try {
         pool = mysql.createPool(dbConfig);
@@ -76,6 +106,19 @@ async function initDb() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
+
+        // Keep old production schemas in sync with the fields used by INSERT/UPDATE queries.
+        await ensureColumn('trainings', 'fullContent', 'LONGTEXT');
+        await ensureColumn('trainings', 'syllabus', 'JSON');
+        await ensureColumn('trainings', 'certLabel', 'TEXT');
+        await ensureColumn('trainings', 'infoTitle', 'TEXT');
+        await ensureColumn('trainings', 'aboutTitle', 'TEXT');
+        await ensureColumn('trainings', 'syllabusTitle', 'TEXT');
+        await ensureColumn('trainings', 'durationLabel', 'TEXT');
+        await ensureColumn('trainings', 'startLabel', 'TEXT');
+        await ensureColumn('trainings', 'statusLabel', 'TEXT');
+        await ensureColumn('trainings', 'sidebarNote', 'TEXT');
+        await ensureColumn('trainings', 'highlightWord', 'TEXT');
 
         await pool.execute(`
             CREATE TABLE IF NOT EXISTS form_submissions (
@@ -223,6 +266,7 @@ app.get('/api/trainings', async (req, res) => {
         const [rows] = await pool.execute('SELECT * FROM trainings ORDER BY created_at DESC');
         res.json(rows);
     } catch (err) {
+        console.error('GET /api/trainings failed:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -230,7 +274,7 @@ app.get('/api/trainings', async (req, res) => {
 app.post('/api/trainings', async (req, res) => {
     try {
         const t = req.body;
-        const syllabus = Array.isArray(t.syllabus) ? t.syllabus : [];
+        const syllabus = normalizeSyllabus(t.syllabus);
         const syllabusJson = JSON.stringify(syllabus);
         const query = `
             INSERT INTO trainings (id, title, description, fullContent, syllabus, startDate, duration, level, image, status, certLabel, infoTitle, aboutTitle, syllabusTitle, durationLabel, startLabel, statusLabel, sidebarNote, highlightWord)
@@ -245,6 +289,7 @@ app.post('/api/trainings', async (req, res) => {
         await pool.execute(query, params);
         res.json({ success: true });
     } catch (err) {
+        console.error('POST /api/trainings failed:', err);
         res.status(500).json({ error: err.message });
     }
 });
